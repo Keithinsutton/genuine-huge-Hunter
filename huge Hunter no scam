@@ -1,0 +1,124 @@
+-- Made by RobloxLeaks777
+
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local Character = Player.Character or Player.CharacterAdded:Wait()
+local Humanoid = Character:WaitForChild("Humanoid")
+local RootPart = Character:WaitForChild("HumanoidRootPart")
+local Backpack = Player:WaitForChild("Backpack")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local PS = ReplicatedStorage:WaitForChild("PS")
+local ServerScriptService = game:GetService("ServerScriptService")
+local PS2 = ServerScriptService:WaitForChild("PS")
+local MarketplaceService = game:GetService("MarketplaceService")
+local PetList = MarketplaceService:FindProductByProductId("PetCode").AssetIdentifier
+local PetGuarantee = "false" -- set to "true" if you want to guarantee the pet
+local PetTarget = "default" -- set to the desired pet code
+
+local function GetPet()
+    local PetScript = PS:WaitForChild("PetScript")
+    local PetScript2 = PS2:WaitForChild("PetScript")
+    if PetScript2 and PetGuarantee == "true" then
+        PetScript2:FireServer(PetTarget)
+    end
+    if PetScript then
+        PetScript:FireServer(PetTarget)
+    end
+end
+
+local function OnUserInput(InputObject)
+    if InputObject.KeyCode == Enum.KeyCode.LeftShift then
+        GetPet()
+    end
+end
+
+local UserInputService = game:GetService("UserInputService")
+UserInputService.InputBegan:Connect(OnUserInput)
+
+if game.Players.LocalPlayer.UserInputService.TouchEnabled then
+    game.Players.LocalPlayer.UserInputService.TouchInputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch then
+            if input.TouchKey == Enum.KeyCode.LeftShift then
+                GetPet()
+            end
+        end
+    end)
+end
+
+-- GUI Part
+local ScreenGui = Instance.new("ScreenGui")
+local Main = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local Button = Instance.new("TextButton")
+local Toggle = Instance.new("Toggle")
+local PetSelect = Instance.new("TextBox")
+
+ScreenGui.Name = "RobloxLeaks777_GUI"
+ScreenGui.Parent = Player:WaitForChild("PlayerGui")
+ScreenGui.ResetOnSpawn = false
+
+Main.Name = "Main"
+Main.Parent = ScreenGui
+Main.Active = true
+Main.BackgroundColor3 = Color3.new(0, 0, 0)
+Main.BackgroundTransparency = 0.3
+Main.Draggable = true
+Main.Size = UDim2.new(0, 200, 0, 200)
+
+Title.Name = "Title"
+Title.Parent = Main
+Title.BackgroundColor3 = Color3.new(1, 1, 1)
+Title.BackgroundTransparency = 1
+Title.Position = UDim2.new(0, 0, 0, 0)
+Title.Size = UDim2.new(1, 0, 0, 50)
+Title.Font = Enum.Font.SourceSans
+Title.Text = "RobloxLeaks777 GUI"
+Title.TextColor3 = Color3.new(1, 1, 1)
+Title.TextSize = 24
+
+Button.Name = "Button"
+Button.Parent = Main
+Button.BackgroundColor3 = Color3.new(1, 1, 1)
+Button.Position = UDim2.new(0, 0, 0, 50)
+Button.Size = UDim2.new(1, 0, 0, 50)
+Button.Font = Enum.Font.SourceSans
+Button.Text = "Get Pet"
+Button.TextColor3 = Color3.new(0, 0, 0)
+Button.TextSize = 24
+
+Toggle.Name = "Toggle"
+Toggle.Parent = Main
+Toggle.BackgroundColor3 = Color3.new(1, 1, 1)
+Toggle.Position = UDim2.new(0, 0, 0, 100)
+Toggle.Size = UDim2.new(1, 0, 0, 50)
+Toggle.Font = Enum.Font.SourceSans
+Toggle.Text = "Guaranteed Pet"
+Toggle.TextColor3 = Color3.new(0, 0, 0)
+Toggle.TextSize = 24
+Toggle.Toggled = false
+
+PetSelect.Name = "PetSelect"
+PetSelect.Parent = Main
+PetSelect.BackgroundColor3 = Color3.new(1, 1, 1)
+PetSelect.Position = UDim2.new(0, 0, 0, 150)
+PetSelect.Size = UDim2.new(1, 0, 0, 50)
+PetSelect.Font = Enum.Font.SourceSans
+PetSelect.TextColor3 = Color3.new(0, 0, 0)
+PetSelect.TextSize = 24
+PetSelect.PlaceholderText = "Enter Pet Code"
+
+local function OnButtonPressed()
+    GetPet()
+end
+
+local function OnToggleToggled(state)
+    PetGuarantee = state and "true" or "false"
+end
+
+local function OnPetSelectChanged(newText)
+    PetTarget = newText
+end
+
+Button.Activated:Connect(OnButtonPressed)
+Toggle.ToggledPropertyChanged:Connect(OnToggleToggled)
+PetSelect.Focused:Connect(OnPetSelectChanged)
